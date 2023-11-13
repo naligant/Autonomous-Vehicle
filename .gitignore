@@ -43,3 +43,6 @@ __MACOSX
 *.exe
 *.out
 *.app
+
+#ignore huge files in PCL Files
+PCL Files/

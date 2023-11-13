@@ -7,13 +7,16 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/visualization//cloud_viewer.h>
+#include <boost/thread/thread.hpp>
+#include <chrono>
+#include <thread>
+
+
 
 using namespace std;
 using namespace pcl;
-namespace pcl_io
-{
 
-}
 
 int main()
 {
@@ -33,9 +36,31 @@ int main()
     cout << "Loaded a point cloud with" << cloud->width * cloud->height << "data points." << endl;
 
     // Access the point cloud data
-    for (const auto& point : *cloud)
+//    for (const auto& point : *cloud)
+//    {
+//        cout << "x: " << point.x << ", y: " << point.y << ", z: " << point.z << endl;
+//    }
+
+    //use PCL Visualizer
+    pcl::visualization::PCLVisualizer::Ptr visualizer(new pcl::visualization::PCLVisualizer("Point Cloud Viewer"));
+
+    //Add the point cloud to visualizer
+    visualizer->addPointCloud(cloud, "cloud");
+
+    //set the coordinate system
+    visualizer->addCoordinateSystem(1.0);
+
+    //wait for viewer class to be closed by user
+    while(!visualizer->wasStopped())
     {
-        cout << "x: " << point.x << ", y: " << point.y << ", z: " << point.z << endl;
+        try {
+            visualizer->spinOnce(100);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } catch (const std::exception& e) {
+            std::cerr << "Caught exception: " << e.what() << std::endl;
+        } catch (...) {
+            std::cerr << "Caught unknown exception." << std::endl;
+        }
     }
 
     return 0;
